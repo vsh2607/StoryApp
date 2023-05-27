@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="welcome">Welcome to StoryApp!</string>
+    <string name="welcome_description">Story App memberikan kamu kesempatan untuk berbagi dan melihat cerita orang lain loh!</string>
+    <string name="login_button_name">Login</string>
+    <string name="register_button_name">Register</string>
+    <string name="register_title">Daftarkan diri Anda!</string>
+    <string name="login_title">Silahkan Login</string>
+    <string name="appwidget_text">Story List</string>
+    <string name="add_widget">Add widget</string>
+    <string name="empty_text">NO DATA</string>
+    <string name="app_widget_description">This is an app widget description</string>
+</resources>
