@@ -1,7 +1,6 @@
 package com.example.mystoryapp.view.camera
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,11 +18,11 @@ class CameraMainViewModel : ViewModel() {
     private val _addStoryResponse  = MutableLiveData<AddNewStoryResponse>()
     val addStoryResponse : LiveData<AddNewStoryResponse> = _addStoryResponse
 
-    fun uploadStory(token : String, description : RequestBody, photo : MultipartBody.Part){
+    fun uploadStory(token : String, description : RequestBody, photo : MultipartBody.Part, lat : RequestBody, lon : RequestBody){
 
         try{
             Log.d("TAG", "$token - $description - $photo")
-            ApiConfig.getApiService().uploadStory("Bearer $token", description, photo).enqueue(object : Callback<AddNewStoryResponse>{
+            ApiConfig.getApiService().uploadStory("Bearer $token", description, photo, lat, lon).enqueue(object : Callback<AddNewStoryResponse>{
                 override fun onResponse(
                     call: Call<AddNewStoryResponse>,
                     response: Response<AddNewStoryResponse>

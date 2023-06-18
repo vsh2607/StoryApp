@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="welcome" translatable="false">Welcome to StoryApp!</string>
+    <string name="welcome_description" translatable="false">Story App gives you the opportunity to share and view other people\'s stories!</string>
+    <string name="login_button_name" translatable="false">Login</string>
+    <string name="register_button_name" translatable="false">Register</string>
+    <string name="register_title" translatable="false">Register Your Self!</string>
+    <string name="login_title" translatable="false">Please Login</string>
+    <string name="empty_text" translatable="false">NO DATA</string>
+    <string name="settings" translatable="false">Settings</string>
+    <string name="logout" translatable="false">Logout</string>
+</resources>

@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import com.example.mystoryapp.databinding.ActivityWelcomeBinding
 import com.example.mystoryapp.view.login.LoginActivity
 import com.example.mystoryapp.view.register.RegisterActivity
@@ -37,8 +36,8 @@ class WelcomeActivity : AppCompatActivity() {
 
     private fun playAnimation(){
 
-        val welcome_title = ObjectAnimator.ofFloat(binding.tvWelcomeStoryapp, View.ALPHA, 1f).setDuration(500)
-        val welcome_desc = ObjectAnimator.ofFloat(binding.tvWelcomeStoryappDescription, View.ALPHA, 1f).setDuration(500)
+        val welcomeTitle = ObjectAnimator.ofFloat(binding.tvWelcomeStoryapp, View.ALPHA, 1f).setDuration(500)
+        val welcomeDesc = ObjectAnimator.ofFloat(binding.tvWelcomeStoryappDescription, View.ALPHA, 1f).setDuration(500)
         val login = ObjectAnimator.ofFloat(binding.btnLogin, View.ALPHA, 1f).setDuration(500)
         val register = ObjectAnimator.ofFloat(binding.btnRegister, View.ALPHA, 1f).setDuration(500)
 
@@ -47,7 +46,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         AnimatorSet().apply {
-            playSequentially(welcome_title, welcome_desc, together)
+            playSequentially(welcomeTitle, welcomeDesc, together)
             start()
         }
 

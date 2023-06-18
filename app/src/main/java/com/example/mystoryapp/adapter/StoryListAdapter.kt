@@ -33,7 +33,6 @@ class StoryListAdapter(private val storyList: List<ListStoryItem>) : RecyclerVie
                 val formattedDate = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(date)
                 tvStoryListDate.text = formattedDate
 
-
             }
         }
     }

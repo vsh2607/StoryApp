@@ -8,7 +8,7 @@ class SharedPreferencesManager(context : Context) {
     private val sharedPreferences : SharedPreferences = context.getSharedPreferences("MY_PREF", Context.MODE_PRIVATE)
     private val editor : SharedPreferences.Editor = sharedPreferences.edit()
 
-    fun saveToken(token : String, name : String, email : String){
+    fun saveData(token : String, name : String, email : String){
         editor.putString("token", token)
         editor.putString("username", name)
         editor.putString("email", email)
@@ -23,13 +23,12 @@ class SharedPreferencesManager(context : Context) {
         return sharedPreferences.getString("username", null)
     }
 
-    fun getEmail() : String?{
-        return sharedPreferences.getString("email", null)
-    }
 
 
-    fun clearToken(){
+    fun clearData(){
         editor.remove("token")
+        editor.remove("username")
+        editor.remove("email")
         editor.apply()
     }
 }

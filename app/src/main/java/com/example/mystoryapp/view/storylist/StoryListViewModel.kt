@@ -13,10 +13,11 @@ import retrofit2.Response
 class StoryListViewModel : ViewModel() {
 
     private val _storyListResponse =  MutableLiveData<StoryListResponse>()
-    val storyListResponse : LiveData<StoryListResponse>  = _storyListResponse
+    val storyListResponse : LiveData<StoryListResponse> = _storyListResponse
 
-     fun getAllStory(token : String){
-        ApiConfig.getApiService().getAllStories("Bearer $token").enqueue(object : Callback<StoryListResponse>{
+    fun getAllStory(token : String){
+        ApiConfig.getApiService().getAllStories("Bearer $token",1, 20).enqueue(object :
+            Callback<StoryListResponse> {
             override fun onResponse(call: Call<StoryListResponse>, response: Response<StoryListResponse>){
 
                 if(response.isSuccessful){

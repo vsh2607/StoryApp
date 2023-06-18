@@ -18,7 +18,8 @@ class RegisterVIewModel : ViewModel() {
     val registerResponse : LiveData<RegisterResponse> = _registerResponse
 
 
-     fun postRegister(authBody : AuthBody, context : Context) {
+
+     fun postRegister(authBody : AuthBody) {
 
             ApiConfig.getApiService().postRegister(authBody).enqueue(object : Callback<RegisterResponse>{
                 override fun onResponse(

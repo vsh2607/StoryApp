@@ -2,6 +2,7 @@ package com.example.mystoryapp.view.storydetail
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.example.mystoryapp.databinding.ActivityStoryDetailBinding
 
@@ -12,6 +13,8 @@ class StoryDetailActivity : AppCompatActivity() {
         const val EXTRA_IMG_URL = "extra_img_url"
         const val EXTRA_DESC = "extra_desc"
         const val EXTRA_DATE = "extra_date"
+        const val EXTRA_LAT = "extra_lat"
+        const val EXTRA_LON = "extra_lon"
     }
     private lateinit var binding : ActivityStoryDetailBinding
 
@@ -21,14 +24,16 @@ class StoryDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val username = intent.getStringExtra(EXTRA_USERNAME)
-        val img_url = intent.getStringExtra(EXTRA_IMG_URL)
+        val imageUrl = intent.getStringExtra(EXTRA_IMG_URL)
         val desc = intent.getStringExtra(EXTRA_DESC)
-        val date = intent.getStringExtra(EXTRA_DATE)
+        val lat = intent.getStringExtra(EXTRA_LAT)
+        val lon = intent.getStringExtra(EXTRA_LON)
 
-        getStoryDetail(username, img_url, desc)
+        Log.d("TAG","lat : $lat & lon : $lon")
 
+
+        getStoryDetail(username, imageUrl, desc)
     }
-
 
     private fun getStoryDetail(username : String?, img_url : String?, desc : String?){
         Glide.with(this).load(img_url).into(binding.ivStoryDetailPic)

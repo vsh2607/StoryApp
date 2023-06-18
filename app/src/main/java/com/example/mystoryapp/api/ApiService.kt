@@ -31,8 +31,9 @@ interface ApiService {
     @GET("stories")
      fun getAllStories(
         @Header("Authorization") authKey : String,
-        @Query("page") page : Int? = 1,
-        @Query("size") size : Int? = 10
+        @Query("page") page : Int?,
+        @Query("size") size : Int? ,
+        @Query("location") location : Int? = 0
     ) : Call<StoryListResponse>
 
 
@@ -42,6 +43,8 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Part("description") description: RequestBody,
         @Part photo: MultipartBody.Part,
+        @Part("lat") lat : RequestBody,
+        @Part("lon") lon: RequestBody
 
     ): Call<AddNewStoryResponse>
 

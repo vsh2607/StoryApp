@@ -5,9 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Patterns
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -15,96 +13,71 @@ import com.example.mystoryapp.api.AuthBody
 import com.example.mystoryapp.databinding.ActivityRegisterBinding
 import com.example.mystoryapp.view.login.LoginActivity
 
+
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityRegisterBinding
     private lateinit var viewModel : RegisterVIewModel
-    private var isEmailValid = false
-    private var isPasswordValid = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         viewModel = ViewModelProvider(this)[RegisterVIewModel::class.java]
 
-
         playAnimation()
+        binding.etRegisterEmail.validateInput(0)
+        binding.etRegisterPassword.validateInput(1)
+        binding.etRegisterName.validateInput(2)
         validateButtonLogin()
 
-        binding.etRegisterEmail.addTextChangedListener(createEmailTextWatcher())
-        binding.etRegisterPassword.addTextChangedListener(createPasswordTextWatcher())
     }
 
     private fun validateButtonLogin() {
-        binding.btnRegisterReg.setOnClickListener {
-            if(isEmailValid || isPasswordValid){
-                showLoading(true)
-                val name = binding.etRegisterName.text.toString().trim()
-                val email = binding.etRegisterEmail.text.toString().trim()
-                val password = binding.etRegisterPassword.text.toString().trim()
-                viewModel.postRegister(AuthBody(name, email, password), this)
-                viewModel.registerResponse.observe(this){
-                    if(it.error == false){
-                        showLoading(false)
-                        startActivity(Intent(this, LoginActivity::class.java))
-                        finish()
-                    }else{
-                        showLoading(false)
-                        Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
+      binding.btnRegisterReg.setOnClickListener {
 
-            }
-        }
-    }
-    private fun createEmailTextWatcher() = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        override fun afterTextChanged(s: Editable?) {
-            val emailText = s.toString().trim()
-            if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
-                binding.etRegisterEmail.error = "Invalid Email address"
-                isEmailValid = false
-            } else if (emailText.isEmpty()) {
-                binding.etRegisterEmail.error = "Email can't be empty"
-                isEmailValid = false
-            } else {
-                isEmailValid = true
-            }
-        }
-    }
-    private fun createPasswordTextWatcher() = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        override fun afterTextChanged(s: Editable?) {
-            val passText = s.toString().trim()
-            if (passText.length in 1..7) {
-                binding.etRegisterPassword.error = "Password can't be less than 8 chars"
-                isPasswordValid = false
-            } else if (passText.isEmpty()) {
-                binding.etRegisterPassword.error = "Password can't be empty"
-                isPasswordValid = false
-            } else {
-                isPasswordValid = true
-            }
-        }
+          val email = binding.etRegisterEmail
+          val password = binding.etRegisterPassword
+          val username = binding.etRegisterName
+          if(email.text.toString().isEmpty() || password.text.toString().isEmpty() || username.text.toString().isEmpty()){
+              Toast.makeText(this, "Pastikan anda telah mengisi input email, username, dan password!", Toast.LENGTH_SHORT).show()
+          }
+
+          if(email.isEmailValid && password.isPasswordValid && username.isUsernameValid){
+              showLoading(true)
+              viewModel.postRegister(AuthBody(username.text.toString(), email.text.toString(), password.text.toString()))
+
+              viewModel.registerResponse.observe(this){
+                  Log.d("TAG", "Hasil Register : $it")
+                  if(!it.error){
+                      showLoading(false)
+                      startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                      finish()
+                  }else{
+                      showLoading(false)
+                      Toast.makeText(this, "Register Failed. Try again!", Toast.LENGTH_SHORT).show()
+                  }
+              }
+
+          }
+
+      }
     }
     private fun playAnimation(){
 
-        val register_title = ObjectAnimator.ofFloat(binding.tvRegisterTitle, View.ALPHA, 1f).setDuration(500)
-        val register_name = ObjectAnimator.ofFloat(binding.etRegisterName, View.ALPHA, 1f).setDuration(500)
-        val register_email = ObjectAnimator.ofFloat(binding.etRegisterEmail, View.ALPHA, 1f).setDuration(500)
-        val register_password = ObjectAnimator.ofFloat(binding.etRegisterPassword, View.ALPHA, 1f).setDuration(500)
-        val register_button = ObjectAnimator.ofFloat(binding.btnRegisterReg, View.ALPHA, 1f).setDuration(500)
+        val registerTitle = ObjectAnimator.ofFloat(binding.tvRegisterTitle, View.ALPHA, 1f).setDuration(500)
+        val registerName = ObjectAnimator.ofFloat(binding.etRegisterName, View.ALPHA, 1f).setDuration(500)
+        val registerEmail = ObjectAnimator.ofFloat(binding.etRegisterEmail, View.ALPHA, 1f).setDuration(500)
+        val registerPassword = ObjectAnimator.ofFloat(binding.etRegisterPassword, View.ALPHA, 1f).setDuration(500)
+        val registerButton = ObjectAnimator.ofFloat(binding.btnRegisterReg, View.ALPHA, 1f).setDuration(500)
 
         val playTogether = AnimatorSet().apply{
-            playTogether(register_name, register_email, register_password)
+            playTogether(registerName, registerEmail, registerPassword)
         }
 
         AnimatorSet().apply{
-            playSequentially(register_title, playTogether, register_button)
+            playSequentially(registerTitle, playTogether, registerButton)
             start()
         }
 
@@ -120,3 +93,5 @@ class RegisterActivity : AppCompatActivity() {
 
 
 }
+
+
