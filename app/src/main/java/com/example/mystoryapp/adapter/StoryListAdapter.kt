@@ -17,7 +17,6 @@ class StoryListAdapter(private val storyList: List<ListStoryItem>) : RecyclerVie
     fun setOnClickCallBack(onItemClickCallBack: OnItemClickCallBack){
         this.onItemClickCallBack = onItemClickCallBack
     }
-
     interface OnItemClickCallBack {
         fun onItemClicked(data : ListStoryItem)
     }
