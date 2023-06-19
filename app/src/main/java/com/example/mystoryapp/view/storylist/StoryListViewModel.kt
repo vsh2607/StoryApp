@@ -4,32 +4,34 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.mystoryapp.api.ApiConfig
-import com.example.mystoryapp.data.StoryRepository
-import com.example.mystoryapp.di.Injection
-import com.example.mystoryapp.model.ListStoryItem
 import com.example.mystoryapp.model.StoryListResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class StoryListViewModel(storyRepository: StoryRepository) : ViewModel() {
+class StoryListViewModel : ViewModel() {
 
-        val story : LiveData<PagingData<StoryListResponse>> =
-                storyRepository.getStory().cachedIn(viewModelScope)
+    private val _storyListResponse =  MutableLiveData<StoryListResponse>()
+    val storyListResponse : LiveData<StoryListResponse> = _storyListResponse
 
-}
+    fun getAllStory(token : String){
+        ApiConfig.getApiService().getAllStories("Bearer $token",1, 20).enqueue(object :
+            Callback<StoryListResponse> {
+            override fun onResponse(call: Call<StoryListResponse>, response: Response<StoryListResponse>){
 
-class ViewModelFactory(private val token : String) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(StoryListViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return StoryListViewModel(Injection.provideRepository(token)) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+                if(response.isSuccessful){
+                    Log.d("TAG", response.body().toString())
+                    _storyListResponse.postValue(response.body())
+                }else{
+                    Log.d("TAG", "GAGAL TEST")
+                }
+            }
+
+            override fun onFailure(call: Call<StoryListResponse>, t: Throwable) {
+                Log.d("TAG", "GAGAL")
+            }
+
+        })
     }
 }

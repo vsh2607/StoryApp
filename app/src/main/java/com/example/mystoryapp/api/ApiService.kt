@@ -34,17 +34,8 @@ interface ApiService {
         @Query("page") page : Int?,
         @Query("size") size : Int? ,
         @Query("location") location : Int? = 0
-    ) : List<StoryListResponse>
-
-
-
-    @GET("stories")
-    fun getAllStories1(
-        @Header("Authorization") authKey : String,
-        @Query("page") page : Int?,
-        @Query("size") size : Int? ,
-        @Query("location") location : Int? = 0
     ) : Call<StoryListResponse>
+
 
     @Multipart
     @POST("stories")

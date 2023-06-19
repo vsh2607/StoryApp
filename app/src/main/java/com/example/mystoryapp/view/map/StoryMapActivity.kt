@@ -50,7 +50,15 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -69,7 +77,7 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun getAllStoryPosition(token: String) {
-        ApiConfig.getApiService().getAllStories1("Bearer $token",1 ,100, 1)
+        ApiConfig.getApiService().getAllStories("Bearer $token",1 ,100, 1)
             .enqueue(object : Callback<StoryListResponse> {
                 override fun onResponse(
                     call: Call<StoryListResponse>,
