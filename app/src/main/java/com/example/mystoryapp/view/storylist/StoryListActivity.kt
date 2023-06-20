@@ -10,9 +10,11 @@ import android.view.MenuItem
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mystoryapp.R
 import com.example.mystoryapp.adapter.StoryListAdapter
+import com.example.mystoryapp.data.StoryListRepository
 import com.example.mystoryapp.databinding.ActivityStoryListBinding
 import com.example.mystoryapp.model.ListStoryItem
 import com.example.mystoryapp.sharedpreferences.SharedPreferencesManager
@@ -25,46 +27,55 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class StoryListActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityStoryListBinding
+    private lateinit var binding: ActivityStoryListBinding
     private lateinit var sharedPreferencesManager: SharedPreferencesManager
     private lateinit var viewModel: StoryListViewModel
-    private lateinit var adapter : StoryListAdapter
+    private lateinit var adapter: StoryListAdapter
+    private lateinit var repository: StoryListRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStoryListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this)[StoryListViewModel::class.java]
+
+        sharedPreferencesManager = SharedPreferencesManager(this)
+        repository = StoryListRepository()
+        val viewModelFactory = StoryListViewModel.Factory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(StoryListViewModel::class.java)
+
         sharedPreferencesManager = SharedPreferencesManager(this)
 
         val username = sharedPreferencesManager.getUsername()
         val token = sharedPreferencesManager.getToken()
-
 
         if (username != null) {
             setWelcomeName(username)
         }
 
         if (token != null) {
-            Log.d("TAG", "TEST TOKEN : $token")
-            getAllStories(token)
-        }
-
-    }
-
-    private fun getAllStories(token: String) {
-        viewModel.getAllStory(token)
-        viewModel.storyListResponse.observe(this) { response ->
-            val storyList = response.listStory
-            setAdapter(storyList)
+            Log.d("TAG", "TEST TOKEN: $token")
+            setupRecyclerView(token)
         }
     }
-
-    private fun setAdapter(storyList: List<ListStoryItem>) {
-        adapter = StoryListAdapter(storyList)
+    private fun setupRecyclerView(token : String) {
+        adapter = StoryListAdapter()
         binding.rvStory.layoutManager = LinearLayoutManager(this@StoryListActivity)
         binding.rvStory.adapter = adapter
-        adapter.setOnClickCallBack(object : StoryListAdapter.OnItemClickCallBack{
+
+        lifecycleScope.launch {
+            viewModel.getAllStory(token).collect { pagingData ->
+                Log.d("TAG", "Test entering lifecyclescope")
+                pagingData.map {
+                    Log.d("TAG", " data : $it")
+                }
+                adapter.submitData(pagingData)
+            }
+        }
+
+
+
+
+        adapter.setOnClickCallBack(object : StoryListAdapter.OnItemClickCallBack {
             override fun onItemClicked(data: ListStoryItem) {
                 val intent = Intent(this@StoryListActivity, StoryDetailActivity::class.java)
                 intent.putExtra(StoryDetailActivity.EXTRA_USERNAME, data.name)
@@ -83,7 +94,8 @@ class StoryListActivity : AppCompatActivity() {
         })
     }
 
-    private fun setWelcomeName(username : String){
+
+    private fun setWelcomeName(username: String) {
         binding.tvWelcoming.text = "Welcome to StoryApp, $username  "
     }
 
@@ -98,29 +110,33 @@ class StoryListActivity : AppCompatActivity() {
                 startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
                 true
             }
-            R.id.menu_add_story -> {
-                startActivity(Intent(this, CameraMainActivity::class.java))
-                true
-            }
+                R.id.menu_add_story -> {
+
+                    try{
+
+                    startActivity(Intent(this, CameraMainActivity::class.java))
+                    }catch (e : Exception ){
+                        Log.d("TAG", "${e.toString()}")
+                    }
+                    true
+
+
+                }
             R.id.menu_loc -> {
                 startActivity(Intent(this, StoryMapActivity::class.java))
                 true
             }
 
-            else   -> {
+            else -> {
                 sharedPreferencesManager.clearData()
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
                 true
             }
         }
-
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed() {
         finish()
     }
-
-
 }

@@ -29,12 +29,21 @@ interface ApiService {
     ) : Call<LoginResponse>
 
     @GET("stories")
-     fun getAllStories(
+     suspend fun getAllStories(
+        @Header("Authorization") authKey : String,
+        @Query("page") page : Int?,
+        @Query("size") size : Int? ,
+        @Query("location") location : Int? = 0
+    ) : StoryListResponse
+
+    @GET("stories")
+    fun getAllStoriesForLocation(
         @Header("Authorization") authKey : String,
         @Query("page") page : Int?,
         @Query("size") size : Int? ,
         @Query("location") location : Int? = 0
     ) : Call<StoryListResponse>
+
 
 
     @Multipart

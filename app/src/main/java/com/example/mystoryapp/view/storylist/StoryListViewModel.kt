@@ -1,37 +1,36 @@
 package com.example.mystoryapp.view.storylist
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mystoryapp.api.ApiConfig
-import com.example.mystoryapp.model.StoryListResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.mystoryapp.data.StoryListRepository
+import com.example.mystoryapp.model.ListStoryItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-class StoryListViewModel : ViewModel() {
+class StoryListViewModel(private val repository: StoryListRepository) : ViewModel() {
 
-    private val _storyListResponse =  MutableLiveData<StoryListResponse>()
-    val storyListResponse : LiveData<StoryListResponse> = _storyListResponse
+    fun getAllStory(token: String): Flow<PagingData<ListStoryItem>> {
+        val allStoryFlow = repository.getAllStories(token).cachedIn(viewModelScope)
+        allStoryFlow.onEach { pagingData ->
+            Log.d("TAG", "ViewModel data: $pagingData")
+        }.launchIn(viewModelScope)
 
-    fun getAllStory(token : String){
-        ApiConfig.getApiService().getAllStories("Bearer $token",1, 20).enqueue(object :
-            Callback<StoryListResponse> {
-            override fun onResponse(call: Call<StoryListResponse>, response: Response<StoryListResponse>){
+        return allStoryFlow
+    }
 
-                if(response.isSuccessful){
-                    Log.d("TAG", response.body().toString())
-                    _storyListResponse.postValue(response.body())
-                }else{
-                    Log.d("TAG", "GAGAL TEST")
-                }
+    class Factory(private val repository: StoryListRepository) : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(StoryListViewModel::class.java)) {
+                return StoryListViewModel(repository) as T
             }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
 
-            override fun onFailure(call: Call<StoryListResponse>, t: Throwable) {
-                Log.d("TAG", "GAGAL")
-            }
-
-        })
     }
 }

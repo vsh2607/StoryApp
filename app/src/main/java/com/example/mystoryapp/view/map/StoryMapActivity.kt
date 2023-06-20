@@ -61,8 +61,6 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-
         sharedPreferenceManager = SharedPreferencesManager(this)
         val token = sharedPreferenceManager.getToken()
 
@@ -72,12 +70,10 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
             getAllStoryPosition(token)
         }
 
-
     }
 
-
     private fun getAllStoryPosition(token: String) {
-        ApiConfig.getApiService().getAllStories("Bearer $token",1 ,100, 1)
+        ApiConfig.getApiService().getAllStoriesForLocation("Bearer $token",1 ,100, 1)
             .enqueue(object : Callback<StoryListResponse> {
                 override fun onResponse(
                     call: Call<StoryListResponse>,
@@ -96,12 +92,8 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
                             val marker = mMap.addMarker(markerOptions)
                             marker?.tag = it
-
-
                             boundsBuilder.include(latLng)
-
                         }
-
                         mMap.setOnMarkerClickListener {
 
                             val data = it.tag as? ListStoryItem
