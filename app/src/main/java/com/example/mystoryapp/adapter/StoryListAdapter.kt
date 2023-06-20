@@ -23,7 +23,6 @@ class StoryListAdapter :
     fun setOnClickCallBack(onItemClickCallBack: OnItemClickCallBack) {
         this.onItemClickCallBack = onItemClickCallBack
     }
-
     interface OnItemClickCallBack {
         fun onItemClicked(data: ListStoryItem)
     }
