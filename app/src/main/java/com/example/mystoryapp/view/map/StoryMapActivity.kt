@@ -1,33 +1,23 @@
 package com.example.mystoryapp.view.map
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mystoryapp.R
 import com.example.mystoryapp.api.ApiConfig
-
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.example.mystoryapp.databinding.ActivityStoryMapBinding
 import com.example.mystoryapp.model.ListStoryItem
 import com.example.mystoryapp.model.StoryListResponse
 import com.example.mystoryapp.sharedpreferences.SharedPreferencesManager
 import com.example.mystoryapp.view.storydetail.StoryDetailActivity
-import com.example.mystoryapp.view.storylist.StoryListViewModel
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -103,8 +93,8 @@ class StoryMapActivity : AppCompatActivity(), OnMapReadyCallback {
                                 intent.putExtra(StoryDetailActivity.EXTRA_IMG_URL, data.photoUrl)
                                 intent.putExtra(StoryDetailActivity.EXTRA_DESC, data.description)
                                 intent.putExtra(StoryDetailActivity.EXTRA_DATE, data.createdAt)
-                                intent.putExtra(StoryDetailActivity.EXTRA_LAT, data.lat?.toString() ?: "")
-                                intent.putExtra(StoryDetailActivity.EXTRA_LON, data.lon?.toString() ?: "")
+                                intent.putExtra(StoryDetailActivity.EXTRA_LAT, data.lat.toString())
+                                intent.putExtra(StoryDetailActivity.EXTRA_LON, data.lon.toString())
                                 startActivity(intent)
 
                             }

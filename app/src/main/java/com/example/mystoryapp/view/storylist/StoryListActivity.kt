@@ -1,13 +1,12 @@
 package com.example.mystoryapp.view.storylist
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.map
@@ -23,7 +22,6 @@ import com.example.mystoryapp.view.map.StoryMapActivity
 import com.example.mystoryapp.view.storydetail.StoryDetailActivity
 import com.example.mystoryapp.view.welcome.WelcomeActivity
 import com.example.mystoryapp.view.widget.ImageBannerWidget
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class StoryListActivity : AppCompatActivity() {
@@ -99,6 +97,7 @@ class StoryListActivity : AppCompatActivity() {
         binding.tvWelcoming.text = "Welcome to StoryApp, $username  "
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -110,30 +109,24 @@ class StoryListActivity : AppCompatActivity() {
                 startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
                 true
             }
-                R.id.menu_add_story -> {
-
-                    try{
-
-                    startActivity(Intent(this, CameraMainActivity::class.java))
-                    }catch (e : Exception ){
-                        Log.d("TAG", "${e.toString()}")
-                    }
-                    true
-
-
-                }
+            R.id.menu_add_story -> {
+                startActivity(Intent(this, CameraMainActivity::class.java))
+                true
+            }
             R.id.menu_loc -> {
                 startActivity(Intent(this, StoryMapActivity::class.java))
                 true
             }
 
-            else -> {
+            else   -> {
                 sharedPreferencesManager.clearData()
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
                 true
             }
         }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed() {

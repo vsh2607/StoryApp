@@ -1,8 +1,8 @@
 package com.example.mystoryapp.view.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mystoryapp.R
 import com.example.mystoryapp.view.welcome.WelcomeActivity
 

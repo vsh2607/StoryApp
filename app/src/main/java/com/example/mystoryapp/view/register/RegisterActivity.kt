@@ -3,11 +3,11 @@ package com.example.mystoryapp.view.register
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.api.AuthBody
 import com.example.mystoryapp.databinding.ActivityRegisterBinding

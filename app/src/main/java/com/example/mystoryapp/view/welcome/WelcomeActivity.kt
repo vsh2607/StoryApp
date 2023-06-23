@@ -3,9 +3,9 @@ package com.example.mystoryapp.view.welcome
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.mystoryapp.databinding.ActivityWelcomeBinding
 import com.example.mystoryapp.view.login.LoginActivity
 import com.example.mystoryapp.view.register.RegisterActivity

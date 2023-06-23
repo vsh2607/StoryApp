@@ -5,14 +5,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.location.Location
-import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +31,8 @@ class CameraMainActivity : AppCompatActivity() {
     private lateinit var sharedPreferenceManager: SharedPreferencesManager
     private lateinit var viewModel: CameraMainViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var loc: Location
+
+    private var loc: Location? = null
 
     private var getFile: File? = null
 
@@ -70,7 +70,6 @@ class CameraMainActivity : AppCompatActivity() {
         binding = ActivityCameraMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getLocation()
         sharedPreferenceManager = SharedPreferencesManager(this)
         viewModel = ViewModelProvider(this)[CameraMainViewModel::class.java]
 
@@ -80,23 +79,31 @@ class CameraMainActivity : AppCompatActivity() {
                 REQUIRED_PERMISSIONS,
                 REQUEST_CODE_PERMISSIONS
             )
+        } else {
+            getLocation { location ->
+                handleLocation(location)
+            }
         }
 
         binding.btnCamerax.setOnClickListener { startCameraX() }
         binding.buttonAdd.setOnClickListener {
             showLoading(true)
-
             uploadStory()
+            Log.d("TAG", "data after clicked lat : ${loc?.latitude}, lon : ${loc?.longitude}")
         }
 
         binding.btnGalery.setOnClickListener { startGallery() }
+    }
+
+    private fun handleLocation(location: Location) {
+         loc = location
+
     }
 
     private fun startCameraX() {
         val intent = Intent(this, CameraXActivity::class.java)
         launcherIntentCameraX.launch(intent)
     }
-
 
     private fun startGallery() {
         val intent = Intent()
@@ -110,15 +117,14 @@ class CameraMainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            val selectedImg = result.data?.data as Uri
-            selectedImg.let { uri ->
+            val selectedImg = result.data?.data
+            selectedImg?.let { uri ->
                 val myFile = uriToFile(uri, this@CameraMainActivity)
                 getFile = myFile
                 binding.ivImagePreview.setImageURI(uri)
             }
         }
     }
-
 
     private val launcherIntentCameraX =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -130,7 +136,7 @@ class CameraMainActivity : AppCompatActivity() {
                     it.data?.getSerializableExtra("picture")
                 } as? File
 
-                val isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) as Boolean
+                val isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) ?: true
 
                 myFile?.let { file ->
                     rotateFile(file, isBackCamera)
@@ -140,20 +146,16 @@ class CameraMainActivity : AppCompatActivity() {
             }
         }
 
-
-    //Upload Story Function
+    // Upload Story Function
     private fun uploadStory() {
-
         if (getFile != null) {
-
             val file = reduceFileImage(getFile as File)
             val desc = binding.edAddDescription.text.toString()
-            val result = desc.ifEmpty {
-                "No Desc"
-            }
+            val result = desc.ifEmpty { "No Desc" }
             val description = result.toRequestBody("text/plain".toMediaType())
-            val lat = loc.latitude.toString().toRequestBody("text/plain".toMediaType())
-            val lon = loc.longitude.toString().toRequestBody("text/plain".toMediaType())
+            val lat = loc?.latitude.toString().toRequestBody("text/plain".toMediaType())
+            val lon = loc?.longitude.toString().toRequestBody("text/plain".toMediaType())
+            Log.d("TAG", "Check loc : $lat, $lon")
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaType())
             val imageMultipart: MultipartBody.Part = MultipartBody.Part.createFormData(
                 "photo",
@@ -161,16 +163,25 @@ class CameraMainActivity : AppCompatActivity() {
                 requestImageFile
             )
 
+            Log.d("TAG", "token in camera : ${sharedPreferenceManager.getToken().toString()}")
 
+            if(loc?.latitude == null && loc?.longitude == null){
+                Log.d("TAG", "No Location")
+                viewModel.uploadStoryWithoutLocation(
+                    sharedPreferenceManager.getToken().toString(),
+                    description,
+                    imageMultipart,
+                )
+            }else{
+                viewModel.uploadStory(
+                    sharedPreferenceManager.getToken().toString(),
+                    description,
+                    imageMultipart,
+                    lat,
+                    lon
+                )
+            }
 
-            Log.d("TAG", "lat : $lat, lng : $lon")
-            viewModel.uploadStory(
-                sharedPreferenceManager.getToken().toString(),
-                description,
-                imageMultipart,
-                lat,
-                lon
-            )
 
             viewModel.addStoryResponse.observe(this) {
                 if (!it.error) {
@@ -181,14 +192,14 @@ class CameraMainActivity : AppCompatActivity() {
                             StoryListActivity::class.java
                         ).apply {
                             flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        })
+                        }
+                    )
                     finish()
                 } else {
                     showLoading(false)
                     Toast.makeText(this, "Upload gagal", Toast.LENGTH_SHORT).show()
                 }
             }
-
         } else {
             showLoading(false)
             Toast.makeText(
@@ -213,18 +224,19 @@ class CameraMainActivity : AppCompatActivity() {
         ) { permissions ->
             when {
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    getLocation { location ->
 
-                    getLocation()
+                        handleLocation(location)
+                    }
                 }
 
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    getLocation { location ->
 
-                    getLocation()
+                        handleLocation(location)
+                    }
                 }
 
-                else -> {
-
-                }
             }
         }
 
@@ -235,31 +247,19 @@ class CameraMainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-
-    private fun getLocation() {
+    private fun getLocation(callback: (Location) -> Unit) {
         if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
             checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
         ) {
-
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            fusedLocationClient.lastLocation.addOnSuccessListener {
-                loc = it
-
+            fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    callback(location)
+                }
             }.addOnFailureListener {
                 Log.d("TAG", "${it.message}")
             }
-
-
         } else {
             requestPermissionLauncher.launch(
                 arrayOf(
@@ -269,6 +269,4 @@ class CameraMainActivity : AppCompatActivity() {
             )
         }
     }
-
-
 }

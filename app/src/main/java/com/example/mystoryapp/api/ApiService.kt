@@ -57,6 +57,17 @@ interface ApiService {
 
     ): Call<AddNewStoryResponse>
 
+    @Multipart
+    @POST("stories")
+    fun uploadStoryWithoutLocation(
+        @Header("Authorization") token: String,
+        @Part("description") description: RequestBody,
+        @Part photo: MultipartBody.Part,
+
+    ): Call<AddNewStoryResponse>
+
+
+
 
 
 }

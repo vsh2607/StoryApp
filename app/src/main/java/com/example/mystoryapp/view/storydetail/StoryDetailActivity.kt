@@ -1,8 +1,8 @@
 package com.example.mystoryapp.view.storydetail
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.mystoryapp.databinding.ActivityStoryDetailBinding
 

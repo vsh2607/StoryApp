@@ -1,18 +1,16 @@
 package com.example.mystoryapp.adapter
 
-import android.util.Log
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mystoryapp.databinding.StoryItemBinding
 import com.example.mystoryapp.model.ListStoryItem
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 
 
 class StoryListAdapter :
