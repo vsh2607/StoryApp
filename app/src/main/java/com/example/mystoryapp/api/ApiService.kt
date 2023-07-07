@@ -59,7 +59,7 @@ interface ApiService {
 
     @Multipart
     @POST("stories")
-    fun uploadStoryWithoutLocation(
+        fun uploadStoryWithoutLocation(
         @Header("Authorization") token: String,
         @Part("description") description: RequestBody,
         @Part photo: MultipartBody.Part,
